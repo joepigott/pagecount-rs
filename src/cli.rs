@@ -4,7 +4,7 @@ use clap::Parser;
 #[command(author, version, about, long_about = None)]
 pub struct CLI {
     /// Paths to directories to search
-    #[arg(short, long, num_args = 1..)]
+    #[arg(short, long, num_args = 1.., required = true)]
     pub path: Vec<String>,
     
     /// Paths to ignore during recursion
