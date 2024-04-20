@@ -1,13 +1,13 @@
 use std::path::Path;
 
-pub fn count(path: &String, ignore: &Vec<String>, verbose: bool) -> usize {
+pub fn count(path: &String, ignore: &Vec<String>, verbose: bool) -> Result<usize, String> {
     let path = Path::new(&path);
     println!("Recursing through {}...", path.display());
 
     return count_r(path, ignore, verbose, 0);
 }
 
-fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> usize {
+fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> Result<usize, String> {
     if verbose {
         print_lines(level);
 
@@ -17,12 +17,17 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> usize
 
     let mut total = 0;
 
-    for item in std::fs::read_dir(path).unwrap() {
+    let directory = match std::fs::read_dir(path) {
+        Ok(directory) => directory,
+        Err(e) => return Err(e.to_string())
+    };
+
+    for item in directory {
         let item = item.unwrap();
         let item_path = item.path();
 
         if item_path.is_dir() && !ignore.contains(&item_path.file_name().unwrap().to_str().unwrap().to_string()) {
-            total += count_r(item_path.as_path(), ignore, verbose, level + 1);
+            total += count_r(item_path.as_path(), ignore, verbose, level + 1)?;
         }
 
         match item_path.extension() {
@@ -46,7 +51,7 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> usize
         }
     }
 
-    return total;
+    return Ok(total);
 }
 
 fn count_pages(path: &Path, verbose: bool, level: u8) -> usize {
