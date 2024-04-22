@@ -34,11 +34,6 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> Resul
             Some(extension) => {
                 if extension == "pdf" {
                     total += count_pages(item_path.as_path(), verbose, level);
-                    if verbose {
-                        print_lines(level);
-                        let name = item_path.file_name().unwrap().to_str().unwrap();
-                        println!("{}", crate::color::Blue(format!("{name}")));
-                    }
                 } else {
                     if verbose {
                         print_lines(level);
@@ -56,17 +51,28 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> Resul
 
 fn count_pages(path: &Path, verbose: bool, level: u8) -> usize {
     let pdf = match pdf::file::FileOptions::cached().open(path) {
-        Ok(pdf) => pdf,
-        Err(_) => {
+        Ok(pdf) => {
+            pdf
+        },
+        Err(e) => {
             if verbose {
                 print_lines(level);
-                println!("{}", crate::color::Red(format!("Error opening {}", path.display())));
+                let name = path.file_name().unwrap().to_str().unwrap();
+                println!("{}", crate::color::Red(format!("{name} - {}", e)));
             }
             return 0;
         }
     };
 
-    return pdf.num_pages() as usize;
+    let pages = pdf.num_pages();
+
+    if verbose {
+        print_lines(level);
+        let name = path.file_name().unwrap().to_str().unwrap();
+        println!("{}", crate::color::Blue(format!("{name} - {pages} pages")));
+    }
+
+    return pages as usize;
 }
 
 fn print_lines(level: u8) {
