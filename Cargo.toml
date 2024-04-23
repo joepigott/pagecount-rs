@@ -5,6 +5,10 @@ edition = "2021"
 description = "`pagecount` takes one or more directories as input, recurses through them to find PDFs, and totals the number of pages."
 authors = ["Joe Pigott <pigroy@pigroy.xyz>"]
 
+[[bin]]
+name = "pc"
+path = "src/main.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
