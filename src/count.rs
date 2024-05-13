@@ -16,10 +16,7 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> Resul
 
     let mut total = 0;
 
-    let directory = match std::fs::read_dir(path) {
-        Ok(directory) => directory,
-        Err(e) => return Err(e.to_string())
-    };
+    let directory = std::fs::read_dir(path).map_err(|e| e.to_string())?;
 
     for item in directory {
         let item = item.unwrap();
