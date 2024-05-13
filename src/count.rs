@@ -11,7 +11,6 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> Resul
     if verbose {
         print_lines(level);
 
-        if level == 0 {}
         println!("{}", path.display());
     }
 
@@ -36,7 +35,7 @@ fn count_r(path: &Path, ignore: &Vec<String>, verbose: bool, level: u8) -> Resul
                     total += count_pages(item_path.as_path(), verbose, level);
                 } else {
                     if verbose {
-                        print_lines(level);
+                        print_lines(level + 1);
                         let name = item_path.file_name().unwrap().to_str().unwrap();
                         println!("{}", crate::color::Gray(format!("{name}")));
                     }
@@ -56,7 +55,7 @@ fn count_pages(path: &Path, verbose: bool, level: u8) -> usize {
         },
         Err(e) => {
             if verbose {
-                print_lines(level);
+                print_lines(level + 1);
                 let name = path.file_name().unwrap().to_str().unwrap();
                 println!("{}", crate::color::Red(format!("{name} - {}", e)));
             }
@@ -67,7 +66,7 @@ fn count_pages(path: &Path, verbose: bool, level: u8) -> usize {
     let pages = pdf.num_pages();
 
     if verbose {
-        print_lines(level);
+        print_lines(level + 1);
         let name = path.file_name().unwrap().to_str().unwrap();
         println!("{}", crate::color::Blue(format!("{name} - {pages} pages")));
     }
